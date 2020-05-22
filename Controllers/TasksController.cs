@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Lab2.Models;
 using Task = Lab2.Models.Task;
 using System;
+using AutoMapper;
+using Lab2.ViewModels;
 
 namespace Lab2.Controllers
 {
@@ -14,15 +16,17 @@ namespace Lab2.Controllers
     public class TasksController : ControllerBase
     {
         private readonly TaskContext _context;
+        private readonly IMapper _mapper;
 
-        public TasksController(TaskContext context)
+        public TasksController(TaskContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Tasks
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Task>>> GetTasks(DateTime? from = null, DateTime? to = null)
+        public async Task<ActionResult<IEnumerable<TaskDto>>> GetTasks(DateTime? from = null, DateTime? to = null)
         {
             IQueryable<Task> tasks = _context.Tasks;
             if (from != null)
@@ -34,12 +38,14 @@ namespace Lab2.Controllers
                 tasks = tasks.Where(t => t.Deadline <= to);
             }
 
-            return await tasks.ToListAsync();
+            var tasksToReturn = await tasks.ToListAsync();
+            var tasksDto = _mapper.Map<IEnumerable<TaskDto>>(tasksToReturn);
+            return Ok(tasksDto);
         }
 
         // GET: api/Tasks/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Task>> GetTask(long id)
+        public async Task<ActionResult<TaskDto>> GetTask(long id)
         {
             var task = await _context.Tasks.FindAsync(id);
 
@@ -48,7 +54,20 @@ namespace Lab2.Controllers
                 return NotFound();
             }
 
-            return task;
+            var taskDto = _mapper.Map<TaskDto>(task);
+            return taskDto;
+        }
+
+        [HttpGet("{taskId}/comments")]
+        public async Task<ActionResult<TaskDto>> GetTaskWithComments(long taskId)
+        {
+            var comments = await _context.Comments
+                                    .Where(c => c.Task.Id == taskId)
+                                    .ToListAsync();
+
+            var taskComments = _mapper.Map<IEnumerable<CommentDto>>(comments);
+
+            return Ok(taskComments);
         }
 
         // PUT: api/Tasks/5
@@ -67,7 +86,7 @@ namespace Lab2.Controllers
                 task.ClosedAt = DateTime.Now;
             }
 
-  
+
             var existingTask = _context.Tasks.AsNoTracking()
                                     .FirstOrDefault(t => t.Id == id);
             if (existingTask.State == State.CLOSED && task.State != State.CLOSED)
@@ -108,9 +127,25 @@ namespace Lab2.Controllers
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
+        [HttpPost("{taskId}/comments")]
+        public async Task<ActionResult<CommentDto>> PostComment(long taskId, CommentCreationDto comment)
+        {
+            var task = await _context.Tasks
+                                        .Include(t => t.Comments)
+                                        .FirstOrDefaultAsync(t => t.Id == taskId);
+
+            var newComment = _mapper.Map<Comment>(comment);
+            task.Comments.Add(newComment);
+            await _context.SaveChangesAsync();
+
+            var commentToReturn = _mapper.Map<CommentDto>(newComment);
+
+            return Ok(commentToReturn);
+        }
+
         // DELETE: api/Tasks/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Task>> DeleteTask(long id)
+        public async Task<ActionResult<TaskDto>> DeleteTask(long id)
         {
             var task = await _context.Tasks.FindAsync(id);
             if (task == null)
@@ -121,7 +156,8 @@ namespace Lab2.Controllers
             _context.Tasks.Remove(task);
             await _context.SaveChangesAsync();
 
-            return task;
+            var deletedTask = _mapper.Map<TaskDto>(task);
+            return deletedTask;
         }
 
         private bool TaskExists(long id)

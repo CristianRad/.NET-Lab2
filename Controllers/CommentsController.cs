@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Lab2.Models;
+using AutoMapper;
+using Lab2.ViewModels;
 
 namespace Lab2.Controllers
 {
@@ -12,33 +14,36 @@ namespace Lab2.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly TaskContext _context;
+        private readonly IMapper _mapper;
 
-        public CommentsController(TaskContext context)
+        public CommentsController(TaskContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Comments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetComments()
+        public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments()
         {
-            return await _context.Comments.ToListAsync();
+            var comments = await _context.Comments.ToListAsync();
+            var commentsDto = _mapper.Map<IEnumerable<CommentDto>>(comments);
+            return Ok(commentsDto);
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IList<string>>> GetComment(long id)
+        public async Task<ActionResult<CommentDto>> GetComment(long id)
         {
-            var taskComment = await _context.Tasks.FindAsync(id);
+            var comment = await _context.Comments.FindAsync(id);
 
-            if (taskComment == null)
+            if (comment == null)
             {
                 return NotFound();
             }
 
-            IEnumerable<Comment> comments = await _context.Comments.ToListAsync();
-            List<string> text = comments.Where(c => c.TaskId == taskComment.Id).Select(c => c.Text).ToList();
-            return text;
+            var commentDto = _mapper.Map<CommentDto>(comment);
+            return Ok(commentDto);
         }
 
         // PUT: api/Comments/5
@@ -73,21 +78,9 @@ namespace Lab2.Controllers
             return NoContent();
         }
 
-        // POST: api/Comments
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
-        {
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
-        }
-
         // DELETE: api/Comments/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Comment>> DeleteComment(long id)
+        public async Task<ActionResult<CommentDto>> DeleteComment(long id)
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment == null)
@@ -98,7 +91,8 @@ namespace Lab2.Controllers
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
 
-            return comment;
+            var deletedComment = _mapper.Map<CommentDto>(comment);
+            return deletedComment;
         }
 
         private bool CommentExists(long id)

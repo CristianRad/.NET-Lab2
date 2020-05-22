@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Lab2.Models;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Text.Json.Serialization;
 
 namespace Lab2
@@ -37,6 +39,7 @@ namespace Lab2
             services.AddDbContext<TaskContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TasksDbConnectionString")));
 
             services.AddTransient<IValidator<Comment>, CommentValidator>();
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
