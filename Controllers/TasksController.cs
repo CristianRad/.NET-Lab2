@@ -25,6 +25,12 @@ namespace Lab2.Controllers
         }
 
         // GET: api/Tasks
+        /// <summary>
+        /// Gets a list of all tasks.
+        /// </summary>
+        /// <param name="from">Filter tasks with the deadline after this date time (inclusive). Leave empty for no filtering.</param>
+        /// <param name="to">Filter tasks with the deadline before this date time (inclusive). Leave empty for no filtering.</param>
+        /// <returns>A list of Task objects.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskDto>>> GetTasks(DateTime? from = null, DateTime? to = null)
         {
@@ -44,6 +50,11 @@ namespace Lab2.Controllers
         }
 
         // GET: api/Tasks/5
+        /// <summary>
+        /// Retrieves a task by a given id.
+        /// </summary>
+        /// <param name="id">The id of the task to retrieve.</param>
+        /// <returns>The task with the given id.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<TaskDto>> GetTask(long id)
         {
@@ -58,6 +69,11 @@ namespace Lab2.Controllers
             return taskDto;
         }
 
+        /// <summary>
+        /// Gets a list of all comments for a task.
+        /// </summary>
+        /// <param name="taskId">The id of the task containing the comments to return.</param>
+        /// <returns>A list of Comment objects.</returns>
         [HttpGet("{taskId}/comments")]
         public async Task<ActionResult<TaskDto>> GetTaskWithComments(long taskId)
         {
@@ -73,6 +89,12 @@ namespace Lab2.Controllers
         // PUT: api/Tasks/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        /// <summary>
+        /// Updates a task.
+        /// </summary>
+        /// <param name="id">The id of the task to update.</param>
+        /// <param name="task">The updated task.</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTask(long id, Task task)
         {
@@ -118,6 +140,11 @@ namespace Lab2.Controllers
         // POST: api/Tasks
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        /// <summary>
+        /// Creates a new task.
+        /// </summary>
+        /// <param name="task">The task to be created.</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<Task>> PostTask(Task task)
         {
@@ -127,6 +154,12 @@ namespace Lab2.Controllers
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
+        /// <summary>
+        /// Creates a comment for a task.
+        /// </summary>
+        /// <param name="taskId">The id of the task to create the comment for.</param>
+        /// <param name="comment">The comment to be created.</param>
+        /// <returns></returns>
         [HttpPost("{taskId}/comments")]
         public async Task<ActionResult<CommentDto>> PostComment(long taskId, CommentCreationDto comment)
         {
@@ -144,6 +177,11 @@ namespace Lab2.Controllers
         }
 
         // DELETE: api/Tasks/5
+        /// <summary>
+        /// Removes a task.
+        /// </summary>
+        /// <param name="id">The id of the task to remove.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<TaskDto>> DeleteTask(long id)
         {

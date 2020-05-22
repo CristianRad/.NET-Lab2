@@ -23,6 +23,10 @@ namespace Lab2.Controllers
         }
 
         // GET: api/Comments
+        /// <summary>
+        /// Gets a list of all comments.
+        /// </summary>
+        /// <returns>A list of Comment objects.</returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments()
         {
@@ -32,6 +36,11 @@ namespace Lab2.Controllers
         }
 
         // GET: api/Comments/5
+        /// <summary>
+        /// Retrieves a comment by a given id.
+        /// </summary>
+        /// <param name="id">The id of the comment to retrieve.</param>
+        /// <returns>The comment with the given id.</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentDto>> GetComment(long id)
         {
@@ -49,6 +58,12 @@ namespace Lab2.Controllers
         // PUT: api/Comments/5
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        /// <summary>
+        /// Updates a comment.
+        /// </summary>
+        /// <param name="id">The id of the comment to update.</param>
+        /// <param name="comment">The updated comment.</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutComment(long id, Comment comment)
         {
@@ -79,6 +94,11 @@ namespace Lab2.Controllers
         }
 
         // DELETE: api/Comments/5
+        /// <summary>
+        /// Removes a comment.
+        /// </summary>
+        /// <param name="id">The id of the comment to remove.</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<CommentDto>> DeleteComment(long id)
         {
