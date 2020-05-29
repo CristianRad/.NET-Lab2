@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -44,7 +45,7 @@ namespace Lab2.Controllers
                 tasks = tasks.Where(t => t.Deadline <= to);
             }
 
-            var tasksToReturn = await tasks.ToListAsync();
+            var tasksToReturn = await tasks.Include(t => t.Comments).ToListAsync();
             var tasksDto = _mapper.Map<IEnumerable<TaskDto>>(tasksToReturn);
             return Ok(tasksDto);
         }

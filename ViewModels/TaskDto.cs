@@ -1,5 +1,4 @@
-﻿using Lab2.Models;
-using System;
+﻿using System;
 
 namespace Lab2.ViewModels
 {
@@ -13,5 +12,6 @@ namespace Lab2.ViewModels
         public string Importance { get; set; }
         public string State { get; set; }
         public DateTime? ClosedAt { get; set; }
+        public int NumberOfComments { get; set; }
     }
 }

@@ -14,7 +14,10 @@ namespace Lab2.Profiles
                     opt => opt.MapFrom(src => src.Importance.ToString()))
                 .ForMember(
                     dest => dest.State,
-                    opt => opt.MapFrom(src => src.State.ToString()));
+                    opt => opt.MapFrom(src => src.State.ToString()))
+                .ForMember(
+                    dest => dest.NumberOfComments, 
+                    opt => opt.MapFrom(src => src.Comments.Count));
         }
 
     }
